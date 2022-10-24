@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <ul>
+        {% for post in post_queryset %}
+            <li><a href='/posts/{{ post.id }}/'>{{ post.title }} - {{ post.content }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock content %}
