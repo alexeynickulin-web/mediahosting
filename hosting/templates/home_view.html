@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<a href='{% url "post_create_view" %}'>create new post</a>
     <ul>
-        {% for post in post_queryset %}
-            <li><a href='/posts/{{ post.id }}/'>{{ post.title }} - {{ post.content }}</a></li>
-        {% endfor %}
+    {% for post in object_list %}        
+        {% if post.title %}
+            <li><a href='{{ post.get_absolute_url }}'>{{ post.title }} - {{ post.content }}</a></li>
+        {% endif %}
+    {% endfor %}
     </ul>
 {% endblock content %}

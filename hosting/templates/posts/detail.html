@@ -2,5 +2,13 @@
 
 {% block content %}
     <h1>{{ object.title }}</h1>
+    {%if object.get_edit_url %}
+    <small>
+        <a href='{{ object.get_edit_url }}'>Edit post</a>
+        <a href='{{ object.get_delete_url }}'>Delete post</a>
+    </small>
+    {% endif %}
+    
     <p>{{ object.content }}</p>
+    <p>Author @{{ object.user.username }}</p>
 {% endblock content %}
