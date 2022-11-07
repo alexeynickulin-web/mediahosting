@@ -1,10 +1,9 @@
-from audioop import reverse
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.forms.models import modelformset_factory
 from django.shortcuts import redirect, render, get_object_or_404
 
-from .forms import PostForm
-from .models import Post
+from .forms import PostForm, PostImageForm
+from .models import Post, PostImage
 
 
 def home_view(request):
@@ -50,13 +49,28 @@ def post_create_view(request):
 def post_update_view(request, slug=None):
     obj = get_object_or_404(Post, slug=slug, user=request.user)
     form = PostForm(request.POST or None, instance=obj)
+    PostImageFormset = modelformset_factory(
+        PostImage, form=PostImageForm, extra=0
+    )
+    qs = obj.postimage_set.all()
+    formset = PostImageFormset(request.POST or None, queryset=qs)
     context = {
         "form": form,
+        "formset": formset,
         "object": obj
     }
-    if form.is_valid():
-        form.save()
-        context['message'] = 'Data saved.'
+    if all([form.is_valid(), formset.is_valid()]):
+        parent = form.save(commit=False)
+        parent.save()
+        for form in formset:
+            child = form.save(commit=False)
+            # if child.post is None:
+            #     print("Добавлена новая")
+            #     child.post = parent
+            child.post = parent
+            child.save()
+        context['message'] = 'Данные сохранены.'
+
     return render(request, "posts/create-update.html", context)
 
 
